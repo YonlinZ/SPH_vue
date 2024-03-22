@@ -34,11 +34,11 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li :class="{ active: isOne }" @click="changeOrder('1',$event)">
-                  <a>综合<span v-show="isOne" class="iconfont" :class="{'icon-down':isDesc,'icon-up':isAsc}"></span></a>
+                <li :class="{ active: isOne }" @click="changeOrder('1', $event)">
+                  <a>综合<span v-show="isOne" class="iconfont" :class="{ 'icon-down': isDesc, 'icon-up': isAsc }"></span></a>
                 </li>
-                <li :class="{ active: isTwo }" @click="changeOrder('2',$event)" >
-                  <a>价格<span v-show="isTwo" class="iconfont" :class="{'icon-down':isDesc,'icon-up':isAsc}"></span></a>
+                <li :class="{ active: isTwo }" @click="changeOrder('2', $event)">
+                  <a>价格<span v-show="isTwo" class="iconfont" :class="{ 'icon-down': isDesc, 'icon-up': isAsc }"></span></a>
                 </li>
               </ul>
             </div>
@@ -71,8 +71,10 @@
 
             </ul>
           </div>
+          <!-- 分页器 -->
           <div class="fr page">
-            <div class="sui-pagination clearfix">
+            <Pagination :pageNo="searchParams.pageNo" :pageSize="searchParams.pageSize" :total="total" :continues="5" @getPageNo="getPageNo"></Pagination>
+            <!-- <div class="sui-pagination clearfix">
               <ul>
                 <li class="prev disabled">
                   <a href="#">«上一页</a>
@@ -98,7 +100,7 @@
                 </li>
               </ul>
               <div><span>共10页&nbsp;</span></div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -108,7 +110,7 @@
 
 <script>
 import SearchSelector from './SearchSelector/SearchSelector';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 export default {
   name: 'Search',
 
@@ -152,8 +154,10 @@ export default {
     },
     isDesc() {
       return this.searchParams.order.indexOf('desc') != -1;
-
-    }
+    },
+    ...mapState({
+      total: state => state.search.searchList.total
+    })
   },
   methods: {
     getData() {
@@ -203,15 +207,18 @@ export default {
       }
       this.getData();
     },
-
-    changeOrder(flag, event){
+    changeOrder(flag, event) {
       let originSort = this.searchParams.order.split(':')[1];
       let sort = 'asc';
 
-      if(event.currentTarget.classList.contains('active')){
-        sort = originSort=="asc"?"desc":"asc";
+      if (event.currentTarget.classList.contains('active')) {
+        sort = originSort == "asc" ? "desc" : "asc";
       }
       this.searchParams.order = `${flag}:${sort}`;
+      this.getData();
+    },
+    getPageNo(pageNo){
+      this.searchParams.pageNo = pageNo;
       this.getData();
     }
   },
